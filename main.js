@@ -180,23 +180,24 @@ function handleFormSubmission(formId, thankYouId) {
                 headers: { 'Accept': 'application/json' }
             });
 
-            let isSuccess = false;
-            if (response.ok) {
-                // Try to check FormSubmit's JSON response for success
-                try {
-                    const data = await response.json();
-                    if (data.success === 'true' || data.success === true) {
-                        isSuccess = true;
-                    } else if (data.message && data.message.toLowerCase().includes('thank')) {
-                        isSuccess = true;
-                    } else {
-                        isSuccess = true; // fallback: treat ok as success
-                    }
-                } catch (jsonErr) {
-                    // If not JSON, fallback to ok
-                    isSuccess = true;
-                }
-            }
+    if (response.ok || response.status === 302) {
+    // treat success even if FormSubmit redirects
+        form.style.transform = 'scale(1)';
+        form.reset();
+        thankYou.style.display = "block";
+        setTimeout(() => {
+            thankYou.classList.add('show');
+        }, 10);
+        setTimeout(() => {
+            thankYou.classList.remove('show');
+            setTimeout(() => {
+                thankYou.style.display = "none";
+            }, 300);
+        }, 5000);
+    } else {
+        throw new Error('Submission failed');
+    }
+
 
             if (isSuccess) {
                 // Success animation
